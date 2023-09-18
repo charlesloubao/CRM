@@ -7,6 +7,7 @@ import {FormProvider, useForm} from "react-hook-form";
 import {useQuery, useQueryClient} from "react-query";
 
 function AddNewContactForm(props: { close: () => void }) {
+    const queryClient = useQueryClient()
     const form = useForm<ContactDTO>({
         defaultValues: {
             firstName: "",
@@ -18,6 +19,7 @@ function AddNewContactForm(props: { close: () => void }) {
 
     async function handleSaveChanges(data: ContactDTO) {
         await axios.post("/api/contacts", data);
+        queryClient.invalidateQueries(["contacts"])
     }
 
     function handleClose(): void {
