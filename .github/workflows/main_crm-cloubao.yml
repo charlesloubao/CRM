@@ -32,18 +32,17 @@ jobs:
         uses: actions/setup-node@v3.8.1
 
       - name: Install Dependencies
-        working-directory: ${{env.GITHUB_WORKSPACE }}/Client
+        working-directory: Client
         run: npm install
 
       - name: Build Frontend
-        working-directory: ${{env.GITHUB_WORKSPACE }}/Client
+        working-directory: Client
         run: npm run build
 
       - name: Move React assets to dotnet output
-        working-directory: ${{env.GITHUB_WORKSPACE }}/Client
         run: |
-          mkdir ${{env.DOTNET_ROOT}}/wwwroot
-          mv ${{env.GITHUB_WORKSPACE }}/Client/dist/* ${{env.DOTNET_ROOT}}/wwwroot/
+          mkdir ${{env.DOTNET_ROOT}}/myapp/wwwroot
+          mv Client/dist/* ${{env.DOTNET_ROOT}}/myapp/wwwroot/
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
