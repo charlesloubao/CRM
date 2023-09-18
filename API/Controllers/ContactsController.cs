@@ -53,7 +53,7 @@ namespace API.Controllers
                 {
                     ContactId = Guid.NewGuid(),
                     FirstName = data.FirstName,
-                    MiddleName = data.MiddleInitial,
+                    MiddleName = data.MiddleName,
                     LastName = data.LastName,
                     Notes = data.Notes,
                     CreatedAt = DateTime.Now,
@@ -78,7 +78,7 @@ namespace API.Controllers
                 if (contact == null) return BadRequest();
 
                 contact.FirstName = data.FirstName;
-                contact.MiddleName = data.MiddleInitial;
+                contact.MiddleName = data.MiddleName;
                 contact.LastName = data.LastName;
                 contact.Notes = data.Notes;
                 contact.UpdatedAt = DateTime.Now;
