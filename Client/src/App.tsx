@@ -1,15 +1,11 @@
 import './App.css'
-import {FormEvent, useEffect, useState} from "react";
-import {Contact, ContactDTO} from "./Api.ts";
+import {useEffect, useState} from "react";
+import {Contact} from "./Api.ts";
 import axios from "axios";
+import AddContactForm from "./components/AddContactForm.tsx";
 
 function App() {
     const [contacts, setContacts] = useState<Contact[]>([])
-
-    const [firstName, setFirstName] = useState<string>("")
-    const [middleName, setMiddleName] = useState<string>("")
-    const [lastName, setLastName] = useState<string>("")
-    const [notes, setNotes] = useState<string>("")
 
     async function fetchContacts() {
         const existingContacts = await axios.get<Contact[]>("/api/contacts")
@@ -22,46 +18,35 @@ function App() {
         fetchContacts()
     }, [])
 
-    async function handleSaveChanges(event: FormEvent) {
-        event.preventDefault()
 
-        const payload: ContactDTO = {
-            firstName, middleName, lastName, notes
+    async function deleteContact(contactId: string, index: number) {
+        if (!confirm("Are you sure?")) return
+        const success = await axios.delete(`/api/contacts/${contactId}`).then(() => true).catch(() => false)
+
+        if (!success) {
+            alert("An error occurred")
+            return
         }
 
-        const contact = await axios.post<Contact>("/api/contacts", payload)
-            .then(response => response.data)
-
-        setContacts((oldValue: Contact[]) => [...oldValue, contact])
+        setContacts(oldValue => {
+            const newArray = [...oldValue]
+            newArray.splice(index, 1)
+            return newArray
+        })
     }
 
     return <div>
         <h1>Contacts</h1>
         <div>
-            {contacts.map((value) => (
+            {contacts.map((value, index) => (
                 <div key={value.contactId}>
                     {value.firstName} {value.lastName}
+                    <button onClick={() => deleteContact(value.contactId!, index)}>Delete</button>
                 </div>
             ))}
         </div>
-        <div>
-            <h2>Add New Contact</h2>
-            <form onSubmit={handleSaveChanges}>
-                <div>
-                    <input value={firstName} onChange={event => setFirstName(event.target.value)} type="text"
-                        placeholder={"First Name"}/>
-                    <input value={middleName} onChange={event => setMiddleName(event.target.value)} type="text"
-                        placeholder={"Middle Name"}/>
-                    <input value={lastName} onChange={event => setLastName(event.target.value)} type="text"
-                        placeholder={"Last Name"}/>
-                </div>
-                <div>
-                    <textarea value={notes} onChange={event => setNotes(event.target.value)} placeholder={"Notes"}/>
-                </div>
-                <button type="submit">Add new contact</button>
-            </form>
-        </div>
-        
+
+        <AddContactForm onNewContact={value => setContacts(oldValue => [...oldValue, value])}/>
     </div>
 }
 
