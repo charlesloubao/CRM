@@ -38,8 +38,74 @@ function AddNewContactForm(props: { close: () => void }) {
     </form>;
 }
 
+function ContactDetailsModal(props: { contactId: string, close: () => void }) {
+    const queryClient = useQueryClient()
+    const contactDetailsQuery = useQuery(["contacts", props.contactId], () => axios.get<Contact>(`/api/contacts/${props.contactId}`)
+        .then(response => response.data))
+
+    const [formData, setFormData] = useState<ContactDTO | null>()
+
+    const data = contactDetailsQuery.data
+
+    const form = useForm<ContactDTO>({
+        defaultValues: {
+            firstName: "",
+            middleName: "",
+            lastName: "",
+            notes: ""
+        }
+    })
+
+    async function saveChanges(data: ContactDTO) {
+        await axios.put(`/api/contacts/${props.contactId}`, data)
+        queryClient.invalidateQueries(["contacts"])
+    }
+
+    useEffect(() => {
+        if (data && formData == null) {
+            setFormData({
+                firstName: data.firstName!,
+                middleName: data.middleName!,
+                lastName: data.lastName!,
+                notes: data.notes!
+            })
+        }
+    }, [formData, data])
+
+    useEffect(() => {
+        if (formData) {
+            form.setValue("firstName", formData.firstName)
+            form.setValue("middleName", formData.middleName)
+            form.setValue("lastName", formData.lastName)
+            form.setValue("notes", formData.notes)
+        }
+    }, [formData])
+
+    if (contactDetailsQuery.isLoading) {
+        return <div>Loading...</div>
+    } else if (contactDetailsQuery.isError) {
+        return <div>An error occurred</div>
+    }
+
+    return <div>
+        <FormProvider {...form}>
+            <form onClick={form.handleSubmit(saveChanges)}>
+                <ContactDetailsForm/>
+                <button type="submit">Save changes</button>
+                <button onClick={() => {
+                    if (!confirm("Discard changes?")) return
+                    props.close()
+                    setFormData(null)
+                }}>Close
+                </button>
+            </form>
+        </FormProvider>
+    </div>;
+}
+
 function App() {
     const [showAddContactModal, setShowAddContactModal] = useState<boolean>(false)
+    const [selectedContactId, setSelectedContactId] = useState<string | null>(null)
 
     const contactsQuery = useQuery(["contacts"], () => axios.get<Contact[]>("/api/contacts")
         .then(response => response.data))
@@ -70,6 +136,7 @@ function App() {
                         {contactsQuery.data?.map((value) => (
                             <div key={value.contactId}>
                                 {value.firstName} {value.lastName}
+                                <button onClick={() => setSelectedContactId(value.contactId!)}>View</button>
                                 <button onClick={() => deleteContact(value.contactId!)}>Delete</button>
                             </div>
                         ))}
@@ -78,6 +145,8 @@ function App() {
         </div>
 
         {showAddContactModal && <AddNewContactForm close={() => setShowAddContactModal(false)}/>}
+        {selectedContactId &&
+            <ContactDetailsModal close={() => setSelectedContactId(null)} contactId={selectedContactId}/>}
     </div>
 }
 
