@@ -5,20 +5,22 @@ import {Contact} from "../../../Api.ts";
 import {Button, Stack} from "react-bootstrap";
 import {AddNewContactForm} from "../../../components/AddNewContactForm.tsx";
 import {ContactDetailsModal} from "../../../components/ContactDetailsModal.tsx";
+import {useParams} from "react-router-dom";
 
 export default function DashboardPage() {
     const [showAddContactModal, setShowAddContactModal] = useState<boolean>(false)
     const [selectedContactId, setSelectedContactId] = useState<string | null>(null)
-    const orgId = 'cfa10b7c-32a1-4d00-a1a5-3b756135932c'
+    const {orgId} = useParams()
 
-    const contactsQuery = useQuery(["contacts"], () => axios.get<Contact[]>(`/api/organizations/${orgId}/contacts`)
+
+    const contactsQuery = useQuery(["organizations", orgId, "contacts"], () => axios.get<Contact[]>(`/api/organizations/${orgId}/contacts`)
         .then(response => response.data))
 
     const queryClient = useQueryClient()
 
     async function deleteContact(contactId: string) {
         if (!confirm("Are you sure?")) return
-        const success = await axios.delete(`/api/contacts/${contactId}`).then(() => true).catch(() => false)
+        const success = await axios.delete(`/api/organizations/${orgId}/contacts/${contactId}`).then(() => true).catch(() => false)
 
         if (!success) {
             alert("An error occurred")

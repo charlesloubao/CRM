@@ -4,8 +4,10 @@ import {ContactDTO} from "../Api.ts";
 import axios from "axios";
 import {Button, Container, Form, Stack} from "react-bootstrap";
 import ContactDetailsForm from "./ContactDetailsForm.tsx";
+import {useParams} from "react-router-dom";
 
 export function AddNewContactForm(props: { close: () => void }) {
+    const {orgId} = useParams()
     const queryClient = useQueryClient()
     const form = useForm<ContactDTO>({
         defaultValues: {
@@ -17,8 +19,8 @@ export function AddNewContactForm(props: { close: () => void }) {
     })
 
     async function handleSaveChanges(data: ContactDTO) {
-        await axios.post("/api/contacts", data);
-        queryClient.invalidateQueries(["contacts"])
+        await axios.post(`/api/organizations/${orgId}/contacts`, data);
+        queryClient.invalidateQueries(["organizations", orgId, "contacts"])
     }
 
     function handleClose(): void {

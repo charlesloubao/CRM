@@ -5,10 +5,12 @@ import {useEffect, useState} from "react";
 import {FormProvider, useForm} from "react-hook-form";
 import {Button, Container, Stack} from "react-bootstrap";
 import ContactDetailsForm from "./ContactDetailsForm.tsx";
+import {useParams} from "react-router-dom";
 
 export function ContactDetailsModal(props: { contactId: string, close: () => void }) {
+    const {orgId} = useParams()
     const queryClient = useQueryClient()
-    const contactDetailsQuery = useQuery(["contacts", props.contactId], () => axios.get<Contact>(`/api/contacts/${props.contactId}`)
+    const contactDetailsQuery = useQuery(["organizations", orgId, "contacts", props.contactId], () => axios.get<Contact>(`/api/organizations/${orgId}/contacts/${props.contactId}`)
         .then(response => response.data))
 
     const [formData, setFormData] = useState<ContactDTO | null>()
@@ -25,8 +27,8 @@ export function ContactDetailsModal(props: { contactId: string, close: () => voi
     })
 
     async function saveChanges(data: ContactDTO) {
-        await axios.put(`/api/contacts/${props.contactId}`, data)
-        queryClient.invalidateQueries(["contacts"])
+        await axios.put(`/api/organizations/${orgId}/contacts/${props.contactId}`, data)
+        queryClient.invalidateQueries(["organizations", orgId, "contacts"])
     }
 
     useEffect(() => {
