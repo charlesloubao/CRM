@@ -4,12 +4,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using API.DB;
 using API.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ContactsController : ControllerBase
@@ -24,6 +26,7 @@ namespace API.Controllers
         [HttpGet]
         public async Task<ActionResult<List<Contact>>> GetContacts()
         {
+            var user = HttpContext.User.Claims;
             await using (_dbContext)
             {
                 var contacts = await _dbContext.Contacts.ToListAsync();
@@ -89,8 +92,8 @@ namespace API.Controllers
                 return Ok(contact);
             }
         }
-        
-        
+
+
         [HttpDelete("{contactId:guid}")]
         public async Task<ActionResult<Contact>> UpdateContact(Guid contactId)
         {
