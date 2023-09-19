@@ -11,4 +11,6 @@ public class Contact
     [Required(AllowEmptyStrings = true)] public string Notes { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
+    public Guid OrganizationId { get; set; }
+    public Organization Organization { get; set; }
 }

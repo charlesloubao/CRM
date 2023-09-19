@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 namespace API.Controllers
 {
     [Authorize]
-    [Route("api/[controller]")]
+    [Route("api/organizations/{organizationId:guid}/[controller]")]
     [ApiController]
     public class ContactsController : ControllerBase
     {
@@ -24,22 +24,26 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Contact>>> GetContacts()
+        public async Task<ActionResult<List<Contact>>> GetContacts(Guid organizationId)
         {
             var user = HttpContext.User.Claims;
             await using (_dbContext)
             {
-                var contacts = await _dbContext.Contacts.ToListAsync();
+                var contacts = await _dbContext.Contacts
+                    .Where(contact => contact.OrganizationId == organizationId)
+                    .ToListAsync();
                 return Ok(contacts);
             }
         }
 
         [HttpGet("{contactId:guid}")]
-        public async Task<ActionResult<Contact>> GetContactById(Guid contactId)
+        public async Task<ActionResult<Contact>> GetContactById(Guid organizationId, Guid contactId)
         {
             await using (_dbContext)
             {
-                var contact = await _dbContext.Contacts.FindAsync(contactId);
+                var contact = await _dbContext.Contacts
+                    .FirstOrDefaultAsync(contact => contact.OrganizationId == organizationId
+                                                    && contact.ContactId == contactId);
 
                 if (contact == null) return NotFound();
 
@@ -48,7 +52,7 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Contact>> CreateContact(ContactDTO data)
+        public async Task<ActionResult<Contact>> CreateContact(Guid organizationId, ContactDTO data)
         {
             await using (_dbContext)
             {
@@ -60,7 +64,8 @@ namespace API.Controllers
                     LastName = data.LastName,
                     Notes = data.Notes,
                     CreatedAt = DateTime.Now,
-                    UpdatedAt = DateTime.Now
+                    UpdatedAt = DateTime.Now,
+                    OrganizationId = organizationId
                 };
 
                 _dbContext.Contacts.Add(contact);
@@ -72,11 +77,12 @@ namespace API.Controllers
 
 
         [HttpPut("{contactId:guid}")]
-        public async Task<ActionResult<Contact>> UpdateContact(Guid contactId, ContactDTO data)
+        public async Task<ActionResult<Contact>> UpdateContact(Guid contactId, Guid organizationId, ContactDTO data)
         {
             await using (_dbContext)
             {
-                var contact = await _dbContext.Contacts.FindAsync(contactId);
+                var contact = await _dbContext.Contacts.FirstOrDefaultAsync(contact =>
+                    contact.OrganizationId == organizationId && contact.ContactId == contactId);
 
                 if (contact == null) return BadRequest();
 

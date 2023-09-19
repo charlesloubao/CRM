@@ -9,8 +9,9 @@ import {ContactDetailsModal} from "../../components/ContactDetailsModal.tsx";
 export default function DashboardPage() {
     const [showAddContactModal, setShowAddContactModal] = useState<boolean>(false)
     const [selectedContactId, setSelectedContactId] = useState<string | null>(null)
+    const orgId = 'cfa10b7c-32a1-4d00-a1a5-3b756135932c'
 
-    const contactsQuery = useQuery(["contacts"], () => axios.get<Contact[]>("/api/contacts")
+    const contactsQuery = useQuery(["contacts"], () => axios.get<Contact[]>(`/api/organizations/${orgId}/contacts`)
         .then(response => response.data))
 
     const queryClient = useQueryClient()

@@ -1,4 +1,5 @@
 using API.DB;
+using API.middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -35,6 +36,8 @@ app.UseStaticFiles();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseMiddleware<OrganizationAccessMiddleware>();
 
 app.MapControllers();
 

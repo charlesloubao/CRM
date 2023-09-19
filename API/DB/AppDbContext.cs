@@ -9,6 +9,8 @@ public class AppDbContext : DbContext
     private readonly string _connectionString;
 
     public DbSet<Contact> Contacts { get; set; }
+    public DbSet<Organization> Organizations { get; set; }
+    public DbSet<OrganizationMember> OrganizationMembers { get; set; }
 
     public AppDbContext(IConfiguration configuration)
     {
