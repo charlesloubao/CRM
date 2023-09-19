@@ -5,6 +5,7 @@ import axios from "axios";
 import ContactDetailsForm from "./components/ContactDetailsForm.tsx";
 import {FormProvider, useForm} from "react-hook-form";
 import {useQuery, useQueryClient} from "react-query";
+import {Button, Container, Form, Navbar, Stack} from "react-bootstrap";
 
 function AddNewContactForm(props: { close: () => void }) {
     const queryClient = useQueryClient()
@@ -28,16 +29,18 @@ function AddNewContactForm(props: { close: () => void }) {
         }
     }
 
-    return <form onSubmit={form.handleSubmit(handleSaveChanges)}>
+    return <Form onSubmit={form.handleSubmit(handleSaveChanges)}>
         <FormProvider {...form}>
-            <div>
+            <Container fluid>
                 <h2>Add New Contact</h2>
                 <ContactDetailsForm/>
-                <button type="submit">Add new contact</button>
-                <button type="button" onClick={handleClose}>Cancel</button>
-            </div>
+                <Stack direction="horizontal" className={"mt-3"} gap={2}>
+                    <Button type="submit">Add new contact</Button>
+                    <Button variant="secondary" type="button" onClick={handleClose}>Cancel</Button>
+                </Stack>
+            </Container>
         </FormProvider>
-    </form>;
+    </Form>;
 }
 
 function ContactDetailsModal(props: { contactId: string, close: () => void }) {
@@ -89,20 +92,30 @@ function ContactDetailsModal(props: { contactId: string, close: () => void }) {
         return <div>An error occurred</div>
     }
 
-    return <div>
+    return <Container fluid>
         <FormProvider {...form}>
             <form onClick={form.handleSubmit(saveChanges)}>
                 <ContactDetailsForm/>
-                <button type="submit">Save changes</button>
-                <button onClick={() => {
-                    if (!confirm("Discard changes?")) return
-                    props.close()
-                    setFormData(null)
-                }}>Close
-                </button>
+                <Stack direction="horizontal" gap={2}>
+                    <Button type="submit">Save changes</Button>
+                    <Button variant="secondary" onClick={() => {
+                        if (!confirm("Discard changes?")) return
+                        props.close()
+                        setFormData(null)
+                    }}>Close
+                    </Button>
+                </Stack>
             </form>
         </FormProvider>
-    </div>;
+    </Container>;
+}
+
+function AppBar() {
+    return <Navbar className={"text-bg-primary px-4 py-3 shadow"}>
+        <div className={"fw-bold fs-4"}>
+            CRM.NET
+        </div>
+    </Navbar>;
 }
 
 function App() {
@@ -127,24 +140,30 @@ function App() {
     }
 
     return <div>
-        <h1>Contacts</h1>
-        <button onClick={() => setShowAddContactModal(true)}>Add contact</button>
-        <div>
-            {contactsQuery.isLoading
-                ? <div>Loading contacts...</div>
-                : contactsQuery.isError
-                    ? <div>An error occurred</div>
-                    : <div>
-                        {contactsQuery.data?.map((value) => (
-                            <div key={value.contactId}>
-                                {value.firstName} {value.lastName}
-                                <button onClick={() => setSelectedContactId(value.contactId!)}>View</button>
-                                <button onClick={() => deleteContact(value.contactId!)}>Delete</button>
-                            </div>
-                        ))}
-                    </div>}
+        <AppBar/>
+        <Container fluid className={"py-4"}>
+            <h1>Contacts</h1>
+            <Button onClick={() => setShowAddContactModal(true)}>Add contact</Button>
+            <div>
+                {contactsQuery.isLoading
+                    ? <div>Loading contacts...</div>
+                    : contactsQuery.isError
+                        ? <div>An error occurred</div>
+                        : <div>
+                            {contactsQuery.data?.map((value) => (
+                                <Stack direction="horizontal" gap={2} key={value.contactId}>
+                                    <div className={"flex-grow-1"}>
+                                        {value.firstName} {value.lastName}
+                                    </div>
+                                    <Button onClick={() => setSelectedContactId(value.contactId!)}>View</Button>
+                                    <Button variant={"danger"}
+                                            onClick={() => deleteContact(value.contactId!)}>Delete</Button>
+                                </Stack>
+                            ))}
+                        </div>}
 
-        </div>
+            </div>
+        </Container>
 
         {showAddContactModal && <AddNewContactForm close={() => setShowAddContactModal(false)}/>}
         {selectedContactId &&
