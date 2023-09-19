@@ -49,7 +49,7 @@ namespace API.Migrations
 
                     b.HasKey("ContactId");
 
-                    b.ToTable("Contacts");
+                    b.ToTable("Contacts", (string)null);
                 });
 #pragma warning restore 612, 618
         }
