@@ -1,10 +1,10 @@
 import {useState} from "react";
 import {useQuery, useQueryClient} from "react-query";
 import axios from "axios";
-import {Contact} from "../../Api.ts";
+import {Contact} from "../../../Api.ts";
 import {Button, Stack} from "react-bootstrap";
-import {AddNewContactForm} from "../../components/AddNewContactForm.tsx";
-import {ContactDetailsModal} from "../../components/ContactDetailsModal.tsx";
+import {AddNewContactForm} from "../../../components/AddNewContactForm.tsx";
+import {ContactDetailsModal} from "../../../components/ContactDetailsModal.tsx";
 
 export default function DashboardPage() {
     const [showAddContactModal, setShowAddContactModal] = useState<boolean>(false)

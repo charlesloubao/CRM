@@ -12,25 +12,33 @@
 export interface Contact {
   /** @format uuid */
   contactId?: string;
-  firstName?: string | null;
-  middleName?: string | null;
-  lastName?: string | null;
-  notes?: string | null;
+  /** @minLength 1 */
+  firstName: string;
+  middleName: string;
+  lastName: string;
+  notes: string;
   /** @format date-time */
   createdAt?: string;
   /** @format date-time */
   updatedAt?: string;
+  /** @format uuid */
+  organizationId?: string;
+  organization?: Organization;
 }
 
 export interface ContactDTO {
   /** @minLength 1 */
   firstName: string;
-  /** @minLength 1 */
   middleName: string;
-  /** @minLength 1 */
   lastName: string;
-  /** @minLength 1 */
   notes: string;
+}
+
+export interface Organization {
+  /** @format uuid */
+  organizationId?: string;
+  /** @minLength 1 */
+  name: string;
 }
 
 export type QueryParamsType = Record<string | number, any>;
@@ -253,12 +261,12 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Contacts
-     * @name ContactsList
-     * @request GET:/api/Contacts
+     * @name OrganizationsContactsDetail
+     * @request GET:/api/organizations/{organizationId}/Contacts
      */
-    contactsList: (params: RequestParams = {}) =>
+    organizationsContactsDetail: (organizationId: string, params: RequestParams = {}) =>
       this.request<Contact[], any>({
-        path: `/api/Contacts`,
+        path: `/api/organizations/${organizationId}/Contacts`,
         method: "GET",
         format: "json",
         ...params,
@@ -268,12 +276,12 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Contacts
-     * @name ContactsCreate
-     * @request POST:/api/Contacts
+     * @name OrganizationsContactsCreate
+     * @request POST:/api/organizations/{organizationId}/Contacts
      */
-    contactsCreate: (data: ContactDTO, params: RequestParams = {}) =>
+    organizationsContactsCreate: (organizationId: string, data: ContactDTO, params: RequestParams = {}) =>
       this.request<Contact, any>({
-        path: `/api/Contacts`,
+        path: `/api/organizations/${organizationId}/Contacts`,
         method: "POST",
         body: data,
         type: ContentType.Json,
@@ -285,12 +293,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Contacts
-     * @name ContactsDetail
-     * @request GET:/api/Contacts/{contactId}
+     * @name OrganizationsContactsDetail2
+     * @request GET:/api/organizations/{organizationId}/Contacts/{contactId}
+     * @originalName organizationsContactsDetail
+     * @duplicate
      */
-    contactsDetail: (contactId: string, params: RequestParams = {}) =>
+    organizationsContactsDetail2: (organizationId: string, contactId: string, params: RequestParams = {}) =>
       this.request<Contact, any>({
-        path: `/api/Contacts/${contactId}`,
+        path: `/api/organizations/${organizationId}/Contacts/${contactId}`,
         method: "GET",
         format: "json",
         ...params,
@@ -300,12 +310,17 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Contacts
-     * @name ContactsUpdate
-     * @request PUT:/api/Contacts/{contactId}
+     * @name OrganizationsContactsUpdate
+     * @request PUT:/api/organizations/{organizationId}/Contacts/{contactId}
      */
-    contactsUpdate: (contactId: string, data: ContactDTO, params: RequestParams = {}) =>
+    organizationsContactsUpdate: (
+      contactId: string,
+      organizationId: string,
+      data: ContactDTO,
+      params: RequestParams = {},
+    ) =>
       this.request<Contact, any>({
-        path: `/api/Contacts/${contactId}`,
+        path: `/api/organizations/${organizationId}/Contacts/${contactId}`,
         method: "PUT",
         body: data,
         type: ContentType.Json,
@@ -317,12 +332,12 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Contacts
-     * @name ContactsDelete
-     * @request DELETE:/api/Contacts/{contactId}
+     * @name OrganizationsContactsDelete
+     * @request DELETE:/api/organizations/{organizationId}/Contacts/{contactId}
      */
-    contactsDelete: (contactId: string, params: RequestParams = {}) =>
+    organizationsContactsDelete: (contactId: string, organizationId: string, params: RequestParams = {}) =>
       this.request<Contact, any>({
-        path: `/api/Contacts/${contactId}`,
+        path: `/api/organizations/${organizationId}/Contacts/${contactId}`,
         method: "DELETE",
         format: "json",
         ...params,

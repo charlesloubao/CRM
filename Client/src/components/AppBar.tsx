@@ -1,11 +1,18 @@
-import {Container} from "react-bootstrap";
+import {Stack} from "react-bootstrap";
 import {useAuth0} from "@auth0/auth0-react";
+import {useParams} from "react-router-dom";
+import {useQuery} from "react-query";
+import {Organization} from "../Api.ts";
 
 export function AppBar() {
     const {isAuthenticated, logout, user} = useAuth0();
-    return <Container fluid className={"text-bg-primary px-4 py-3 shadow"}>
+    const {orgId} = useParams()
+
+    const cachedResponse = useQuery<Organization>(["organizations", orgId])
+
+    return <Stack direction={"horizontal"} className={"text-bg-primary px-4 py-3 shadow justify-content-between"}>
         <div className={"fw-bold fs-4"}>
-            CRM.NET
+            CRM.NET / {cachedResponse.data!.name}
         </div>
         <div>
             {(isAuthenticated && user) ? <div>
@@ -21,5 +28,5 @@ export function AppBar() {
                     <button>Sign in</button>
                 </div>}
         </div>
-    </Container>;
+    </Stack>;
 }
