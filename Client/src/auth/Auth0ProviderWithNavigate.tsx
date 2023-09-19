@@ -6,9 +6,7 @@ import auth0config from "./auth0config.ts";
 export const Auth0ProviderWithNavigate = ({children}: PropsWithChildren) => {
     const navigate = useNavigate();
 
-    const domain = auth0config.domain;
-    const clientId = auth0config.clientId;
-    const redirectUri = auth0config.redirectUri;
+    const {domain, clientId, audience, redirectUri} = auth0config;
 
     const onRedirectCallback = (appState: any) => {
         navigate(appState?.returnTo || window.location.pathname);
@@ -24,6 +22,7 @@ export const Auth0ProviderWithNavigate = ({children}: PropsWithChildren) => {
             clientId={clientId}
             authorizationParams={{
                 redirect_uri: redirectUri,
+                audience: audience
             }}
             onRedirectCallback={onRedirectCallback}
         >
