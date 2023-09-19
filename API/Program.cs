@@ -17,8 +17,8 @@ builder.Services.AddAuthentication(options =>
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 }).AddJwtBearer(options =>
 {
-    options.Authority = builder.Configuration["AUTH0_DOMAIN"];
-    options.Audience = builder.Configuration["AUTH0_AUDIENCE"];
+    options.Authority = builder.Configuration["Auth0:Domain"];
+    options.Audience = builder.Configuration["Auth0:Audience"];
 });
 
 var app = builder.Build();
