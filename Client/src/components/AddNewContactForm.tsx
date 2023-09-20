@@ -15,7 +15,8 @@ export function AddNewContactForm(props: { close: () => void }) {
             firstName: "",
             middleName: "",
             lastName: "",
-            notes: ""
+            notes: "",
+            phoneNumbers: []
         }
     })
 

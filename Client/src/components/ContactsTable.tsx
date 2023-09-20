@@ -39,7 +39,9 @@ function ContactTableRow({contact}: { contact: Contact }) {
             </div>
         </td>
         <td className={"align-middle"}>{/*TODO: Display email here*/}</td>
-        <td className={"align-middle"}>{/*TODO: Display Phone number here*/}</td>
+        <td className={"align-middle"}>{contact.phoneNumbers!.length > 0 &&
+            <a href={`tel:${contact.phoneNumbers![0].value}`}>{contact.phoneNumbers![0].value}</a>}
+        </td>
         <td className={"align-middle"}>{/*TODO: Display Company here*/}</td>
         <td className={"align-middle"}>{moment(contact.createdAt).format("MM/DD/YYYY hh:mm A")}</td>
         <td className={"align-middle text-end"}>

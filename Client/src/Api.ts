@@ -24,6 +24,7 @@ export interface Contact {
   /** @format uuid */
   organizationId?: string;
   organization?: Organization;
+  phoneNumbers?: PhoneNumber[] | null;
 }
 
 export interface ContactDTO {
@@ -32,6 +33,7 @@ export interface ContactDTO {
   middleName: string;
   lastName: string;
   notes: string;
+  phoneNumbers: PhoneNumberDTO[];
 }
 
 export interface Organization {
@@ -39,6 +41,43 @@ export interface Organization {
   organizationId?: string;
   /** @minLength 1 */
   name: string;
+}
+
+export interface PhoneNumber {
+  /** @format uuid */
+  phoneNumberId?: string;
+  /** @format date-time */
+  createdAt?: string;
+  /** @format date-time */
+  updatedAt?: string;
+  isPrimary?: boolean;
+  /** @format uuid */
+  contactId?: string;
+  contact?: Contact;
+  /** @format uuid */
+  phoneNumberTypeId?: string;
+  phoneNumberType?: PhoneNumberType;
+  value?: string | null;
+}
+
+export interface PhoneNumberDTO {
+  /** @format uuid */
+  contactId?: string | null;
+  /** @format uuid */
+  phoneNumberId?: string | null;
+  /** @format uuid */
+  phoneNumberTypeId?: string;
+  value?: string | null;
+}
+
+export interface PhoneNumberType {
+  /** @format uuid */
+  phoneNumberTypeId?: string;
+  /** @minLength 1 */
+  name: string;
+  /** @format uuid */
+  organizationId?: string | null;
+  organization?: Organization;
 }
 
 export type QueryParamsType = Record<string | number, any>;
@@ -339,6 +378,36 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       this.request<Contact, any>({
         path: `/api/organizations/${organizationId}/Contacts/${contactId}`,
         method: "DELETE",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Organizations
+     * @name OrganizationsList
+     * @request GET:/api/Organizations
+     */
+    organizationsList: (params: RequestParams = {}) =>
+      this.request<Organization[], any>({
+        path: `/api/Organizations`,
+        method: "GET",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Organizations
+     * @name OrganizationsDetail
+     * @request GET:/api/Organizations/{organizationId}
+     */
+    organizationsDetail: (organizationId: string, params: RequestParams = {}) =>
+      this.request<Contact, any>({
+        path: `/api/Organizations/${organizationId}`,
+        method: "GET",
         format: "json",
         ...params,
       }),

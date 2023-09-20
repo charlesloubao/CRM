@@ -22,7 +22,8 @@ export function ContactDetailsModal(props: { contactId: string, close: () => voi
             firstName: "",
             middleName: "",
             lastName: "",
-            notes: ""
+            notes: "",
+            phoneNumbers: []
         }
     })
 
@@ -37,7 +38,13 @@ export function ContactDetailsModal(props: { contactId: string, close: () => voi
                 firstName: data.firstName!,
                 middleName: data.middleName!,
                 lastName: data.lastName!,
-                notes: data.notes!
+                notes: data.notes!,
+                phoneNumbers: data.phoneNumbers!.map(value => ({
+                    phoneNumberId: value.phoneNumberId,
+                    contactId: value.contactId,
+                    phoneNumberTypeId: value.phoneNumberTypeId,
+                    value: value.value
+                }))
             })
         }
     }, [formData, data])

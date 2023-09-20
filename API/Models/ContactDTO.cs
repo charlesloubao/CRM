@@ -8,4 +8,5 @@ public class ContactDTO
     [Required(AllowEmptyStrings = true)] public string MiddleName { get; set; }
     [Required(AllowEmptyStrings = true)] public string LastName { get; set; }
     [Required(AllowEmptyStrings = true)] public string Notes { get; set; }
+    [Required] public List<PhoneNumberDTO> PhoneNumbers { get; set; }
 }

@@ -13,4 +13,6 @@ public class Contact
     public DateTime UpdatedAt { get; set; }
     public Guid OrganizationId { get; set; }
     public Organization Organization { get; set; }
+
+    public List<PhoneNumber> PhoneNumbers { get; set; }
 }

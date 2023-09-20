@@ -30,6 +30,7 @@ namespace API.Controllers
             await using (_dbContext)
             {
                 var contacts = await _dbContext.Contacts
+                    .Include(contact => contact.PhoneNumbers)
                     .Where(contact => contact.OrganizationId == organizationId)
                     .ToListAsync();
                 return Ok(contacts);
@@ -42,6 +43,7 @@ namespace API.Controllers
             await using (_dbContext)
             {
                 var contact = await _dbContext.Contacts
+                    .Include(contact => contact.PhoneNumbers)
                     .FirstOrDefaultAsync(contact => contact.OrganizationId == organizationId
                                                     && contact.ContactId == contactId);
 
@@ -65,7 +67,15 @@ namespace API.Controllers
                     Notes = data.Notes,
                     CreatedAt = DateTime.Now,
                     UpdatedAt = DateTime.Now,
-                    OrganizationId = organizationId
+                    OrganizationId = organizationId,
+                    PhoneNumbers = data.PhoneNumbers.Select(phoneData => new PhoneNumber()
+                    {
+                        PhoneNumberId = Guid.NewGuid(),
+                        CreatedAt = DateTime.Now,
+                        UpdatedAt = DateTime.Now,
+                        PhoneNumberTypeId = phoneData.PhoneNumberTypeId,
+                        Value = phoneData.Value
+                    }).ToList()
                 };
 
                 _dbContext.Contacts.Add(contact);
