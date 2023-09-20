@@ -1,1 +1,13 @@
 @import "bootstrap/dist/css/bootstrap.min.css";
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+$theme-colors: (
+        "primary": #0074d9,
+        "gray":#dedede
+);

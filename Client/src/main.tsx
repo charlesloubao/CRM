@@ -9,6 +9,7 @@ import AuthCallbackPage from "./pages/AuthCallbackPage.tsx";
 import DashboardPage from "./pages/app/organizations/DashboardPage.tsx";
 import OrganizationsListPage from "./pages/app/PickOrganizationPage.tsx";
 import OrganizationRoot from "./pages/app/organizations/OrganizationRoot.tsx";
+import ContactDetailsPage from "./pages/app/contact-details/ContactDetailsPage.tsx";
 
 const queryClient = new QueryClient()
 
@@ -24,7 +25,8 @@ const router = createBrowserRouter([
             {
                 path: "/app/organizations/:orgId", element: <OrganizationRoot/>,
                 children: [
-                    {path: "", element: <DashboardPage/>}
+                    {path: "", element: <DashboardPage/>},
+                    {path: "contacts/:contactId", element: <ContactDetailsPage/>}
                 ]
             },
             {path: "callback", element: <AuthCallbackPage/>}

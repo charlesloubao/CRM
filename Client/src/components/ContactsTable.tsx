@@ -4,18 +4,9 @@ import {Button, Table} from "react-bootstrap";
 import axios from "axios";
 import {Link} from "react-router-dom";
 import moment from "moment/moment";
+import {formatContactFullName} from "../utils/contactUtils.ts";
+import {ContactAvatar} from "./ContactAvatar.tsx";
 
-function formatContactFullName(contact: Contact) {
-    return [contact.firstName, contact.middleName[0] ?? "", contact.lastName]
-        .filter(token => token.length > 0).join(" ");
-}
-
-function ContactAvatar({contact}: { contact: Contact }) {
-    return <div style={{width: 42, height: 42}}
-                className={"rounded-circle text-uppercase text-bg-primary d-flex align-items-center justify-content-center"}>
-        {formatContactFullName(contact).substring(0, 2)}
-    </div>;
-}
 
 function ContactTableRow({contact}: { contact: Contact }) {
 

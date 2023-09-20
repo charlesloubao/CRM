@@ -1,15 +1,15 @@
 import {AppBar} from "../AppBar.tsx";
-import {Container} from "react-bootstrap";
+import {Stack} from "react-bootstrap";
 import {PropsWithChildren} from "react";
 import {withAuthenticationRequired} from "@auth0/auth0-react";
 
 export default withAuthenticationRequired(function AppLayout({children}: PropsWithChildren) {
-    return <div>
+    return <Stack className={"h-100"}>
         <AppBar/>
-        <Container fluid className={"py-4"}>
+        <div className={"flex-grow-1"}>
             {children}
-        </Container>
-    </div>
+        </div>
+    </Stack>
 }, {
     onRedirecting: () => <div>Loading...</div>
 })

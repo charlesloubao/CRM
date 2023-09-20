@@ -10,7 +10,7 @@ export function AppBar() {
 
     const cachedResponse = useQuery<Organization>(["organizations", orgId])
 
-    return <Stack direction={"horizontal"} className={"text-bg-primary px-4 py-3 shadow justify-content-between"}>
+    return <Stack direction={"horizontal"} className={"text-bg-primary px-4 py-3 justify-content-between"}>
         <div className={"fw-bold fs-4"}>
             CRM.NET / {cachedResponse.data!.name}
         </div>
