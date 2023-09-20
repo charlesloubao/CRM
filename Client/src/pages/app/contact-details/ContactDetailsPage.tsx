@@ -2,7 +2,7 @@ import {useParams} from "react-router-dom";
 import {useMutation, useQuery, useQueryClient} from "react-query";
 import axios from "axios";
 import {Contact, ContactDTO} from "../../../Api.ts";
-import {useMemo, useRef, useState} from "react";
+import {useMemo, useState} from "react";
 import {formatContactFullName} from "../../../utils/contactUtils.ts";
 import Button from "react-bootstrap/Button";
 import {Form} from "react-bootstrap";
@@ -19,7 +19,6 @@ function ContactDetails({contact, onEditContactButtonClick}: { contact: Contact,
 }
 
 function EditContactForm({contact, onCancelClick}: { contact: Contact, onCancelClick: () => void }) {
-    const originalContact = useRef<Contact>(contact)
     const queryClient = useQueryClient()
 
     const form = useForm<ContactDTO>({
@@ -31,13 +30,7 @@ function EditContactForm({contact, onCancelClick}: { contact: Contact, onCancelC
         }
     })
 
-    const formData = form.watch()
-
-    const dataChanged = useMemo(() => {
-        const {firstName, middleName, lastName, notes} = originalContact.current
-        return firstName !== formData.firstName || middleName !== formData.middleName
-            || lastName !== formData.lastName || notes !== formData.notes
-    }, [formData, originalContact])
+    const formChanged = useMemo(() => form.formState.isDirty, [form.formState.isDirty])
 
     const saveChanges = useMutation((data: ContactDTO) =>
         axios.put(`/api/organizations/${contact.organizationId}/contacts/${contact.contactId}`, data), {
@@ -53,7 +46,7 @@ function EditContactForm({contact, onCancelClick}: { contact: Contact, onCancelC
     return <Form onSubmit={form.handleSubmit(data => saveChanges.mutate(data))}>
         <div>
             <Button type={"button"} onClick={() => {
-                if (!dataChanged || confirm("Discard changes?")) {
+                if (!formChanged || confirm("Discard changes?")) {
                     onCancelClick()
                 }
             }}>Cancel</Button>
