@@ -23,7 +23,8 @@ export function ContactDetailsModal(props: { contactId: string, close: () => voi
             middleName: "",
             lastName: "",
             notes: "",
-            phoneNumbers: []
+            phoneNumbers: [],
+            toDelete: []
         }
     })
 
@@ -44,7 +45,8 @@ export function ContactDetailsModal(props: { contactId: string, close: () => voi
                     contactId: value.contactId,
                     phoneNumberTypeId: value.phoneNumberTypeId,
                     value: value.value
-                }))
+                })),
+                toDelete: []
             })
         }
     }, [formData, data])

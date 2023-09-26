@@ -5,6 +5,7 @@ import {useQuery} from "react-query";
 import {useParams} from "react-router-dom";
 import axios from "axios";
 import {TrashIcon} from "@heroicons/react/24/outline";
+import update from 'immutability-helper'
 
 
 function PhoneNumberField({array, index}: {
@@ -13,6 +14,9 @@ function PhoneNumberField({array, index}: {
 }) {
     const form = useFormContext<ContactDTO>()
     const {orgId} = useParams()
+
+    const toDelete = form.watch("toDelete")
+    const value = form.watch(`phoneNumbers.${index}`)
 
     const phoneNumberTypes = useQuery([orgId, "phoneNumberTypes"],
         () => axios.get<PhoneNumberType[]>(`/api/organizations/${orgId}/phoneNumberTypes`)
@@ -35,7 +39,14 @@ function PhoneNumberField({array, index}: {
                 ))}
             </Form.Select>
         </Form.Group>
-        <Button onClick={() => array.remove(index)} type={"button"} variant={"danger"} className={"align-self-end"}>
+        <Button onClick={() => {
+            if (value.phoneNumberId) {
+                form.setValue("toDelete", update(toDelete, {
+                    $push: [value.phoneNumberId]
+                }))
+            }
+            array.remove(index)
+        }} type={"button"} variant={"danger"} className={"align-self-end"}>
             <TrashIcon color={"white"} width={12} height={12}/>
         </Button>
     </Stack>;

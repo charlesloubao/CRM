@@ -11,7 +11,10 @@ import ContactDetailsForm from "../../../components/ContactDetailsForm.tsx";
 
 type ContactDetailsPageMode = "view" | "edit"
 
-function ContactDetails({contact, onEditContactButtonClick}: { contact: Contact, onEditContactButtonClick: () => void }) {
+function ContactDetails({contact, onEditContactButtonClick}: {
+    contact: Contact,
+    onEditContactButtonClick: () => void
+}) {
     return <div>
         <h1>{formatContactFullName(contact, false)}</h1>
         <Button onClick={onEditContactButtonClick}>Edit</Button>
@@ -26,7 +29,14 @@ function EditContactForm({contact, onCancelClick}: { contact: Contact, onCancelC
             firstName: contact.firstName,
             middleName: contact.middleName,
             lastName: contact.lastName,
-            notes: contact.notes
+            notes: contact.notes,
+            phoneNumbers: contact.phoneNumbers?.map(value => ({
+                contactId: value.contactId,
+                phoneNumberTypeId: value.phoneNumberTypeId,
+                phoneNumberId: value.phoneNumberId,
+                value: value.value
+            })),
+            toDelete: []
         }
     })
 

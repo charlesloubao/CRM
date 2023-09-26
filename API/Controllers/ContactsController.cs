@@ -91,8 +91,10 @@ namespace API.Controllers
         {
             await using (_dbContext)
             {
-                var contact = await _dbContext.Contacts.FirstOrDefaultAsync(contact =>
-                    contact.OrganizationId == organizationId && contact.ContactId == contactId);
+                var contact = await _dbContext.Contacts
+                    .Include(contact => contact.PhoneNumbers)
+                    .FirstOrDefaultAsync(contact =>
+                        contact.OrganizationId == organizationId && contact.ContactId == contactId);
 
                 if (contact == null) return BadRequest();
 
@@ -101,6 +103,41 @@ namespace API.Controllers
                 contact.LastName = data.LastName;
                 contact.Notes = data.Notes;
                 contact.UpdatedAt = DateTime.Now;
+
+                PhoneNumber? existingPhoneNumber;
+                foreach (var numberDto in data.PhoneNumbers)
+                {
+                    if (numberDto.PhoneNumberId == null)
+                    {
+                        contact.PhoneNumbers.Add(new PhoneNumber()
+                        {
+                            ContactId = contact.ContactId,
+                            PhoneNumberTypeId = numberDto.PhoneNumberTypeId,
+                            Value = numberDto.Value
+                        });
+                    }
+                    else
+                    {
+                         existingPhoneNumber =
+                            contact.PhoneNumbers.FirstOrDefault(value =>
+                                value.PhoneNumberId == numberDto.PhoneNumberId);
+
+                        if (existingPhoneNumber == null) return BadRequest();
+
+                        existingPhoneNumber.Value = numberDto.Value;
+                        existingPhoneNumber.PhoneNumberTypeId = numberDto.PhoneNumberTypeId;
+                    }
+                }
+
+                foreach (var phoneNumberId in data.ToDelete)
+                {
+                    existingPhoneNumber =
+                        contact.PhoneNumbers.FirstOrDefault(value => value.PhoneNumberId == phoneNumberId);
+
+                    if (existingPhoneNumber == null) return BadRequest();
+
+                    contact.PhoneNumbers.Remove(existingPhoneNumber);
+                }
 
                 _dbContext.Contacts.Update(contact);
                 await _dbContext.SaveChangesAsync();

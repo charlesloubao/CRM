@@ -34,6 +34,7 @@ export interface ContactDTO {
   lastName: string;
   notes: string;
   phoneNumbers: PhoneNumberDTO[];
+  toDelete: string[];
 }
 
 export interface Organization {
@@ -53,7 +54,6 @@ export interface PhoneNumber {
   isPrimary?: boolean;
   /** @format uuid */
   contactId?: string;
-  contact?: Contact;
   /** @format uuid */
   phoneNumberTypeId?: string;
   phoneNumberType?: PhoneNumberType;
@@ -407,6 +407,21 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     organizationsDetail: (organizationId: string, params: RequestParams = {}) =>
       this.request<Contact, any>({
         path: `/api/Organizations/${organizationId}`,
+        method: "GET",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags PhoneNumberTypes
+     * @name OrganizationsPhoneNumberTypesDetail
+     * @request GET:/api/organizations/{organizationId}/PhoneNumberTypes
+     */
+    organizationsPhoneNumberTypesDetail: (organizationId: string, params: RequestParams = {}) =>
+      this.request<PhoneNumberType[], any>({
+        path: `/api/organizations/${organizationId}/PhoneNumberTypes`,
         method: "GET",
         format: "json",
         ...params,
