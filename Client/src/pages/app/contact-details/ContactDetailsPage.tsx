@@ -18,6 +18,13 @@ function ContactDetails({contact, onEditContactButtonClick}: {
     return <div>
         <h1>{formatContactFullName(contact, false)}</h1>
         <Button onClick={onEditContactButtonClick}>Edit</Button>
+
+        <div>
+            <h2>Phone Numbers</h2>
+            <div>{contact.phoneNumbers?.map(value => (
+                <div key={value.contactId}>{value.value} {value.phoneNumberType?.name}</div>
+            ))}</div>
+        </div>
     </div>
 }
 

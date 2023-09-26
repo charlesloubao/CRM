@@ -44,6 +44,7 @@ namespace API.Controllers
             {
                 var contact = await _dbContext.Contacts
                     .Include(contact => contact.PhoneNumbers)
+                    .ThenInclude(phoneNumber => phoneNumber.PhoneNumberType)
                     .FirstOrDefaultAsync(contact => contact.OrganizationId == organizationId
                                                     && contact.ContactId == contactId);
 
@@ -113,18 +114,21 @@ namespace API.Controllers
                         {
                             ContactId = contact.ContactId,
                             PhoneNumberTypeId = numberDto.PhoneNumberTypeId,
-                            Value = numberDto.Value
+                            Value = numberDto.Value,
+                            UpdatedAt = DateTime.Now,
+                            CreatedAt = DateTime.Now
                         });
                     }
                     else
                     {
-                         existingPhoneNumber =
+                        existingPhoneNumber =
                             contact.PhoneNumbers.FirstOrDefault(value =>
                                 value.PhoneNumberId == numberDto.PhoneNumberId);
 
                         if (existingPhoneNumber == null) return BadRequest();
 
                         existingPhoneNumber.Value = numberDto.Value;
+                        existingPhoneNumber.UpdatedAt = DateTime.Now;
                         existingPhoneNumber.PhoneNumberTypeId = numberDto.PhoneNumberTypeId;
                     }
                 }
