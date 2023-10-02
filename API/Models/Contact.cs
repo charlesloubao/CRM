@@ -15,4 +15,5 @@ public class Contact
     public Organization Organization { get; set; }
 
     public List<PhoneNumber> PhoneNumbers { get; set; }
+    public List<EmailAddress> EmailAddresses { get; set; }
 }

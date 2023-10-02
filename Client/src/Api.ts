@@ -25,6 +25,7 @@ export interface Contact {
   organizationId?: string;
   organization?: Organization;
   phoneNumbers?: PhoneNumber[] | null;
+  emailAddresses?: EmailAddress[] | null;
 }
 
 export interface ContactDTO {
@@ -34,7 +35,45 @@ export interface ContactDTO {
   lastName: string;
   notes: string;
   phoneNumbers: PhoneNumberDTO[];
-  toDelete: string[];
+  emailAddresses: EmailAddressDTO[];
+  phoneNumbersToDelete: string[];
+  emailAddressesToDelete: string[];
+}
+
+export interface EmailAddress {
+  /** @format uuid */
+  emailAddressId?: string;
+  /** @format date-time */
+  createdAt?: string;
+  /** @format date-time */
+  updatedAt?: string;
+  isPrimary?: boolean;
+  /** @format uuid */
+  contactId?: string;
+  /** @format uuid */
+  emailAddressTypeId?: string;
+  emailAddressType?: EmailAddressType;
+  value?: string | null;
+}
+
+export interface EmailAddressDTO {
+  /** @format uuid */
+  contactId?: string | null;
+  /** @format uuid */
+  emailAddressId?: string | null;
+  /** @format uuid */
+  emailAddressTypeId?: string;
+  value?: string | null;
+}
+
+export interface EmailAddressType {
+  /** @format uuid */
+  emailAddressTypeId?: string;
+  /** @minLength 1 */
+  name: string;
+  /** @format uuid */
+  organizationId?: string | null;
+  organization?: Organization;
 }
 
 export interface Organization {
@@ -378,6 +417,21 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       this.request<Contact, any>({
         path: `/api/organizations/${organizationId}/Contacts/${contactId}`,
         method: "DELETE",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags EmailAddressTypes
+     * @name OrganizationsEmailAddressTypesDetail
+     * @request GET:/api/organizations/{organizationId}/EmailAddressTypes
+     */
+    organizationsEmailAddressTypesDetail: (organizationId: string, params: RequestParams = {}) =>
+      this.request<EmailAddressType[], any>({
+        path: `/api/organizations/${organizationId}/EmailAddressTypes`,
+        method: "GET",
         format: "json",
         ...params,
       }),

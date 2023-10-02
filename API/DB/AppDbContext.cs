@@ -10,7 +10,10 @@ public class AppDbContext : DbContext
 
     public DbSet<Contact> Contacts { get; set; }
     public DbSet<Organization> Organizations { get; set; }
+    public DbSet<PhoneNumber> PhoneNumbers { get; set; }
+    public DbSet<EmailAddress> EmailAddresses { get; set; }
     public DbSet<PhoneNumberType> PhoneNumberTypes { get; set; }
+    public DbSet<EmailAddressType> EmailAddressTypes { get; set; }
     public DbSet<OrganizationMember> OrganizationMembers { get; set; }
 
     public AppDbContext(IConfiguration configuration)

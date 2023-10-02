@@ -7,7 +7,7 @@ import {formatContactFullName} from "../../../utils/contactUtils.ts";
 import Button from "react-bootstrap/Button";
 import {Form} from "react-bootstrap";
 import {FormProvider, useForm} from "react-hook-form";
-import ContactDetailsForm from "../../../components/ContactDetailsForm.tsx";
+import ContactDetailsForm from "../../../components/contact-editor/ContactDetailsForm.tsx";
 
 type ContactDetailsPageMode = "view" | "edit"
 
@@ -19,12 +19,19 @@ function ContactDetails({contact, onEditContactButtonClick}: {
         <h1>{formatContactFullName(contact, false)}</h1>
         <Button onClick={onEditContactButtonClick}>Edit</Button>
 
-        <div>
+        {contact.phoneNumbers!.length > 0 && <div>
             <h2>Phone Numbers</h2>
             <div>{contact.phoneNumbers?.map(value => (
                 <div key={value.contactId}>{value.value} {value.phoneNumberType?.name}</div>
             ))}</div>
-        </div>
+        </div>}
+
+        {contact.emailAddresses!.length > 0 && <div>
+            <h2>Email Addresses</h2>
+            <div>{contact.emailAddresses?.map(value => (
+                <div key={value.emailAddressTypeId}>{value.value} {value.emailAddressType?.name}</div>
+            ))}</div>
+        </div>}
     </div>
 }
 
@@ -43,7 +50,14 @@ function EditContactForm({contact, onCancelClick}: { contact: Contact, onCancelC
                 phoneNumberId: value.phoneNumberId,
                 value: value.value
             })),
-            toDelete: []
+            emailAddresses: contact.emailAddresses?.map(value => ({
+                contactId: value.contactId,
+                emailAddressTypeId: value.emailAddressTypeId,
+                emailAddressId: value.emailAddressId,
+                value: value.value
+            })),
+            phoneNumbersToDelete: [],
+            emailAddressesToDelete: []
         }
     })
 

@@ -4,7 +4,7 @@ import {Contact, ContactDTO} from "../Api.ts";
 import {useEffect, useState} from "react";
 import {FormProvider, useForm} from "react-hook-form";
 import {Button, Container, Stack} from "react-bootstrap";
-import ContactDetailsForm from "./ContactDetailsForm.tsx";
+import ContactDetailsForm from "./contact-editor/ContactDetailsForm.tsx";
 import {useParams} from "react-router-dom";
 
 export function ContactDetailsModal(props: { contactId: string, close: () => void }) {
@@ -24,7 +24,8 @@ export function ContactDetailsModal(props: { contactId: string, close: () => voi
             lastName: "",
             notes: "",
             phoneNumbers: [],
-            toDelete: []
+            phoneNumbersToDelete: [],
+            emailAddressesToDelete: []
         }
     })
 
@@ -46,7 +47,14 @@ export function ContactDetailsModal(props: { contactId: string, close: () => voi
                     phoneNumberTypeId: value.phoneNumberTypeId,
                     value: value.value
                 })),
-                toDelete: []
+                emailAddresses: data.emailAddresses!.map(value => ({
+                    emailAddressId: value.emailAddressId,
+                    contactId: value.contactId,
+                    emailAddressTypeId: value.emailAddressTypeId,
+                    value: value.value
+                })),
+                phoneNumbersToDelete: [],
+                emailAddressesToDelete: []
             })
         }
     }, [formData, data])

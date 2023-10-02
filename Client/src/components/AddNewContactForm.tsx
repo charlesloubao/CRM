@@ -3,7 +3,7 @@ import {FormProvider, useForm} from "react-hook-form";
 import {ContactDTO} from "../Api.ts";
 import axios from "axios";
 import {Button, Form, Stack} from "react-bootstrap";
-import ContactDetailsForm from "./ContactDetailsForm.tsx";
+import ContactDetailsForm from "./contact-editor/ContactDetailsForm.tsx";
 import {useParams} from "react-router-dom";
 import {useMemo} from "react";
 
@@ -17,7 +17,8 @@ export function AddNewContactForm(props: { close: () => void }) {
             lastName: "",
             notes: "",
             phoneNumbers: [],
-            toDelete: []
+            phoneNumbersToDelete: [],
+            emailAddressesToDelete: []
         }
     })
 

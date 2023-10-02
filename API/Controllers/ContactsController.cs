@@ -30,6 +30,7 @@ namespace API.Controllers
             await using (_dbContext)
             {
                 var contacts = await _dbContext.Contacts
+                    .Include(contact => contact.EmailAddresses)
                     .Include(contact => contact.PhoneNumbers)
                     .Where(contact => contact.OrganizationId == organizationId)
                     .ToListAsync();
@@ -43,6 +44,8 @@ namespace API.Controllers
             await using (_dbContext)
             {
                 var contact = await _dbContext.Contacts
+                    .Include(contact => contact.EmailAddresses)
+                    .ThenInclude(emailAddress => emailAddress.EmailAddressType)
                     .Include(contact => contact.PhoneNumbers)
                     .ThenInclude(phoneNumber => phoneNumber.PhoneNumberType)
                     .FirstOrDefaultAsync(contact => contact.OrganizationId == organizationId
@@ -76,6 +79,14 @@ namespace API.Controllers
                         UpdatedAt = DateTime.Now,
                         PhoneNumberTypeId = phoneData.PhoneNumberTypeId,
                         Value = phoneData.Value
+                    }).ToList(),
+                    EmailAddresses = data.EmailAddresses.Select(emailAddressData => new EmailAddress()
+                    {
+                        EmailAddressId = Guid.NewGuid(),
+                        CreatedAt = DateTime.Now,
+                        UpdatedAt = DateTime.Now,
+                        EmailAddressTypeId = emailAddressData.EmailAddressTypeId,
+                        Value = emailAddressData.Value
                     }).ToList()
                 };
 
@@ -93,6 +104,7 @@ namespace API.Controllers
             await using (_dbContext)
             {
                 var contact = await _dbContext.Contacts
+                    .Include(contact => contact.EmailAddresses)
                     .Include(contact => contact.PhoneNumbers)
                     .FirstOrDefaultAsync(contact =>
                         contact.OrganizationId == organizationId && contact.ContactId == contactId);
@@ -110,8 +122,9 @@ namespace API.Controllers
                 {
                     if (numberDto.PhoneNumberId == null)
                     {
-                        contact.PhoneNumbers.Add(new PhoneNumber()
+                        _dbContext.PhoneNumbers.Add(new PhoneNumber()
                         {
+                            PhoneNumberId = Guid.NewGuid(),
                             ContactId = contact.ContactId,
                             PhoneNumberTypeId = numberDto.PhoneNumberTypeId,
                             Value = numberDto.Value,
@@ -133,7 +146,7 @@ namespace API.Controllers
                     }
                 }
 
-                foreach (var phoneNumberId in data.ToDelete)
+                foreach (var phoneNumberId in data.PhoneNumbersToDelete)
                 {
                     existingPhoneNumber =
                         contact.PhoneNumbers.FirstOrDefault(value => value.PhoneNumberId == phoneNumberId);
@@ -141,6 +154,45 @@ namespace API.Controllers
                     if (existingPhoneNumber == null) return BadRequest();
 
                     contact.PhoneNumbers.Remove(existingPhoneNumber);
+                }
+
+                EmailAddress? existingEmailAddress;
+                foreach (var emailAddressDto in data.EmailAddresses)
+                {
+                    if (emailAddressDto.EmailAddressId == null)
+                    {
+                        _dbContext.EmailAddresses.Add(new EmailAddress()
+                        {
+                            EmailAddressId = Guid.NewGuid(),
+                            ContactId = contact.ContactId,
+                            EmailAddressTypeId = emailAddressDto.EmailAddressTypeId,
+                            Value = emailAddressDto.Value,
+                            UpdatedAt = DateTime.Now,
+                            CreatedAt = DateTime.Now
+                        });
+                    }
+                    else
+                    {
+                        existingEmailAddress =
+                            contact.EmailAddresses.FirstOrDefault(value =>
+                                value.EmailAddressId == emailAddressDto.EmailAddressId);
+
+                        if (existingEmailAddress == null) return BadRequest();
+
+                        existingEmailAddress.Value = emailAddressDto.Value;
+                        existingEmailAddress.UpdatedAt = DateTime.Now;
+                        existingEmailAddress.EmailAddressTypeId = emailAddressDto.EmailAddressTypeId;
+                    }
+                }
+
+                foreach (var emailAddressId in data.EmailAddressesToDelete)
+                {
+                    existingEmailAddress =
+                        contact.EmailAddresses.FirstOrDefault(value => value.EmailAddressId == emailAddressId);
+
+                    if (existingEmailAddress == null) return BadRequest();
+
+                    contact.EmailAddresses.Remove(existingEmailAddress);
                 }
 
                 _dbContext.Contacts.Update(contact);
